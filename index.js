@@ -8,7 +8,7 @@ const gap = 90,
 const setImagePos = () => {
     for (let i = 0; i < carousel.childElementCount; i++) {
         const img = carousel.children[i];
-        img.style.left = imgPos + i * (imgWidth + gap) + margin + 'px';
+        img.style.transform = `translateX(${imgPos + i * (imgWidth + gap) + margin}px)`;
     }
 };
 
@@ -21,13 +21,19 @@ carousel.onwheel = e => {
     scrollPos -= e.deltaX;
 };
 
-const addImage = file => {
-    
+const addImageCard = file => {
+    const div = document.createElement('div');
+    div.className = 'image';
 };
 
+const jobs = [];
+
 const imgInput = document.getElementById('img-input');
-imgInput.onchange = e => {
-    console.log(e.target.files[0]);
+imgInput.onchange = async e => {
+    for (const f of e.target.files) {
+        jobs.push(f);
+
+    }
 };
 
 

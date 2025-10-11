@@ -64,21 +64,21 @@ section {
     width: 150px;
     height: 150px;
     margin: 80px;
-    /* margin-left: 25px; */
-    /* margin-right: 65px; */
 
     border-radius: 100px;
 
     background-color: white;
-    /* color: rgb(47, 110, 199); */
 
     box-shadow: 0 0 10px 0px rgb(150, 150, 150);
+
+    cursor: pointer;
 }
 
 .image {
     position: absolute;
     width: 200px;
     height: 220px;
+    left: 0px;
 
     /* min-width: 0; */
 
@@ -96,7 +96,7 @@ section {
     border-radius: 15px;
     box-shadow: 0 0 10px 0px rgb(150, 150, 150);
 }
-.ai-label, .real-label {
+.label {
     position: absolute;
     bottom: 10px;
     right: 10px;
@@ -112,13 +112,55 @@ section {
     color: white;
     text-align: center;
     line-height: 32px;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    transition: width 0.2s ease-out;
 }
-.ai-label {
+.label[data-type='loading'] {
+    width: 41px;
+}
+.label[data-type='ai'] {
+    width: 32px;
+}
+.label[data-type='real'] {
+    width: 50px;
+}
+/* .ai-label {
     width: 32px;
 }
 .real-label {
     width: 50px;
+}
+.loading-label {
+} */
+.loading-dot {
+    width: 4px;
+    height: 4px;
+    position: relative;
 
+    overflow: hidden;
+
+    border-radius: 4px;
+
+    background-color: white;
+
+    animation: bounce 1s ease-in-out 0s infinite forwards;
+}
+@keyframes bounce {
+    from {
+        transform: translateY(-4px);
+    }
+    40% {
+        transform: translateY(4px);
+    }
+    to {
+        transform: translateY(-4px);
+    }
 }
 
 #carousel {
