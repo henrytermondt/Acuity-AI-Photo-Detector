@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    
+    <title>AI Image Detector</title>
+    <link rel='stylesheet' href='styles.css'>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <section id='banner'>
+        <svg id='blob-container' width="500" height="140" xmlns="http://www.w3.org/2000/svg">
+            <svg viewBox="300 0 100 100">
+                <path fill="rgb(39, 92, 179)" d="M55,-13.3C63.5,8.6,57.5,39.8,39.2,52.8C20.9,65.8,-9.8,60.8,-29.2,45.4C-48.6,30.1,-56.7,4.5,-49.9,-14.8C-43.2,-34.2,-21.6,-47.4,0.8,-47.7C23.2,-47.9,46.4,-35.3,55,-13.3Z" transform="translate(100 100)" />
+            </svg>
+            <svg viewBox="0 0 100 100">
+                <path fill="rgb(39, 92, 179)" d="M55,-13.3C63.5,8.6,57.5,39.8,39.2,52.8C20.9,65.8,-9.8,60.8,-29.2,45.4C-48.6,30.1,-56.7,4.5,-49.9,-14.8C-43.2,-34.2,-21.6,-47.4,0.8,-47.7C23.2,-47.9,46.4,-35.3,55,-13.3Z" transform="translate(100 100)" />
+            </svg>
+            <svg viewBox="-200 20 150 150">
+                <path fill="rgb(40, 86, 161)" d="M39.4,-56.8C49.2,-47.1,54,-33.1,55.4,-20C56.9,-7,55,5.1,49.5,14.2C44,23.3,34.9,29.4,26,43C17.2,56.7,8.6,77.8,0.7,76.9C-7.2,75.9,-14.4,52.8,-18.9,37.7C-23.4,22.7,-25.3,15.8,-36.8,5.9C-48.3,-3.9,-69.6,-16.7,-73.9,-30.4C-78.3,-44.1,-65.8,-58.8,-50.7,-66.8C-35.6,-74.8,-17.8,-76.1,-1.5,-74.1C14.8,-72,29.6,-66.5,39.4,-56.8Z" transform="translate(100 100)" />
+            </svg>
+            <svg viewBox="90 70 150 150">
+                <path fill="rgb(40, 90, 170)" d="M41.1,-56.7C53,-48,62.2,-35.6,69.4,-20.8C76.7,-6,82.1,11.2,77.5,25.1C72.9,39,58.3,49.6,43.7,56.4C29.1,63.3,14.6,66.4,-0.5,67.1C-15.6,67.8,-31.2,66.1,-43.3,58.4C-55.3,50.8,-63.9,37.2,-70.4,21.8C-76.9,6.4,-81.3,-10.7,-74.2,-21.5C-67.1,-32.2,-48.4,-36.6,-34.1,-44.5C-19.8,-52.5,-9.9,-64.1,2.4,-67.3C14.6,-70.6,29.2,-65.5,41.1,-56.7Z" transform="translate(100 100)" />
+            </svg>
+            <svg viewBox="200 -20 150 150">
+                <path fill="rgb(40, 86, 161)" d="M39.4,-56.8C49.2,-47.1,54,-33.1,55.4,-20C56.9,-7,55,5.1,49.5,14.2C44,23.3,34.9,29.4,26,43C17.2,56.7,8.6,77.8,0.7,76.9C-7.2,75.9,-14.4,52.8,-18.9,37.7C-23.4,22.7,-25.3,15.8,-36.8,5.9C-48.3,-3.9,-69.6,-16.7,-73.9,-30.4C-78.3,-44.1,-65.8,-58.8,-50.7,-66.8C-35.6,-74.8,-17.8,-76.1,-1.5,-74.1C14.8,-72,29.6,-66.5,39.4,-56.8Z" transform="translate(100 100)" />
+            </svg>
+            <svg viewBox="600 20 150 150">
+                <path fill="rgb(37, 72, 127)" d="M39.4,-56.8C49.2,-47.1,54,-33.1,55.4,-20C56.9,-7,55,5.1,49.5,14.2C44,23.3,34.9,29.4,26,43C17.2,56.7,8.6,77.8,0.7,76.9C-7.2,75.9,-14.4,52.8,-18.9,37.7C-23.4,22.7,-25.3,15.8,-36.8,5.9C-48.3,-3.9,-69.6,-16.7,-73.9,-30.4C-78.3,-44.1,-65.8,-58.8,-50.7,-66.8C-35.6,-74.8,-17.8,-76.1,-1.5,-74.1C14.8,-72,29.6,-66.5,39.4,-56.8Z" transform="translate(100 100)" />
+            </svg>
+            <svg viewBox="-500 -40 150 150">
+                <path fill="rgb(37, 72, 127)" d="M39.4,-56.8C49.2,-47.1,54,-33.1,55.4,-20C56.9,-7,55,5.1,49.5,14.2C44,23.3,34.9,29.4,26,43C17.2,56.7,8.6,77.8,0.7,76.9C-7.2,75.9,-14.4,52.8,-18.9,37.7C-23.4,22.7,-25.3,15.8,-36.8,5.9C-48.3,-3.9,-69.6,-16.7,-73.9,-30.4C-78.3,-44.1,-65.8,-58.8,-50.7,-66.8C-35.6,-74.8,-17.8,-76.1,-1.5,-74.1C14.8,-72,29.6,-66.5,39.4,-56.8Z" transform="translate(100 100)" />
+            </svg>
+        </svg>
+    </section>
+    <section id='banner-blur'>
+        <h1 id='title'>Acuity <span style='font-weight: 400;'>AI</span>
+            <!-- <svg id='logo' xmlns="http://www.w3.org/2000/svg" viewBox="0 -19 18 19">
+                <path d="M 0 0 L 7 -19 L 18 -19 L 16.8947368 -16 L 8.8947368 -16 L 3 0 L 0 0" fill="white"/>
+                <path d="M 0 0 L 7 -19 L 8.8947368 -16 L 3 0 L 0 0" fill="white"/>
+                <path d="M 7 -19 L 18 -19 L 16.8947368 -16 L 8.8947368 -16" fill="white"/>
+
+                <circle cx='12.5' cy='-7' r='1.7' fill='white'/>
+            </svg> -->
+        </h1>
+    </section>
+    <section id='content'>
+        <section id='upload'>
+            <div id='button'>
+                <svg width='150' height='150' xmlns='http://www.w3.org/2000/svg'>
+                    <rect width='12' height='100' x='69' y='25' fill='rgb(17, 52, 107)' />
+                    <rect width='100' height='12' x='25' y='69' fill='rgb(17, 52, 107)' />
+                    <circle cx='75' cy='25' r='6' fill='rgb(17, 52, 107)'></circle>
+                    <circle cx='25' cy='75' r='6' fill='rgb(17, 52, 107)'></circle>
+                    <circle cx='125' cy='75' r='6' fill='rgb(17, 52, 107)'></circle>
+                    <circle cx='75' cy='125' r='6' fill='rgb(17, 52, 107)'></circle>
+                </svg>
+            </div>
+            <div id='carousel'>
+                <div class='image'>
+                    <img src='/assets/sheep-midjourney-ai.png'>
+                    <div class='ai-label'>AI</div>
+                </div>
+                <div class='image'>
+                    <img src='/assets/halp.jpeg'>
+                    <div class='real-label'>Real</div>
+                </div>
+                <div class='image'>
+                    <img src='/assets/japanese-temple1-small.jpeg'>
+                    <div class='real-label'>Real</div>
+                    <!-- <svg width="200" height="220" xmlns="http://www.w3.org/2000/svg">
+                        <style>
+                            text {
+                                font-size: 25px;
+                                font-family: "Poppins", sans-serif;
+                            }
+                        </style>
+                        <path d='M 0 220 L 200 220 L 200 180 L 160 180 L 145 207 L 0 207' fill='rgb(66, 66, 66)'/>
+                        <text x='164' y='207' fill='white'>AI</text>
+                    </svg> -->
+                </div>
+            </div>
+            <input id='img-input' type='file'>
+        </section>
+        <!-- <section id='info'>
+            
+        </section> -->
+    </section>
+
+
+    <script src='https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.webgpu.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/jimp@0.22.12/browser/lib/jimp.min.js'></script>
+    <script src='/ai.js'></script>
+    <script src='/index.js'></script>
+</body>
+</html>
