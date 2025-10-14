@@ -109,7 +109,7 @@ section {
 
     font-family: 'Poppins', sans-serif;
     font-size: 16px;
-    color: white;
+    color: rgba(255, 255, 255, 0);
     text-align: center;
     line-height: 32px;
 
@@ -119,7 +119,7 @@ section {
     justify-content: center;
     gap: 5px;
 
-    transition: width 0.2s ease-out;
+    transition: width 0.2s ease-out, color 0.2s linear 0.1s;
 }
 .label[data-type='loading'] {
     width: 41px;
@@ -128,7 +128,7 @@ section {
     width: 32px;
 }
 .label[data-type='real'] {
-    width: 50px;
+    width: 56px;
 }
 /* .ai-label {
     width: 32px;
@@ -195,4 +195,9 @@ section {
     top: var(--banner-height);
     height: 800px;
 
+}
+
+
+.static {
+    transition: none !important;
 }

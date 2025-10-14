@@ -1,10 +1,8 @@
 let ready = false;
-let job = null;
 let session;
 
 
 const toTensor = img => {
-    console.log('toTensor');
     let index = 0;
     const data = new Float32Array(3 * 224 * 224);
 
@@ -34,22 +32,28 @@ const runInference = async bufferData => {
 };
 
 
-const reader = new FileReader();
-reader.onload = async e => {
-    console.log('onload');
-    start = performance.now();
-    
-    const output = await runInference(e.target?.result);
-    console.log(output);
-    console.log('done', (performance.now() - start) / 1000);
+
+const run = async file => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async e => {
+            const start = performance.now();
+            
+            const output = await runInference(e.target?.result);
+
+            resolve({
+                output: output,
+                time: performance.now() - start,
+            });
+        };
+        reader.readAsArrayBuffer(file);
+    });
 };
 
-let start;
 const init = async () => {
     session = await ort.InferenceSession.create('model.onnx', {
-        executionProviders: ['webgpu', 'wasm']
+        executionProviders: ['webgpu']
     });
-
+    console.log(session)
     ready = true;
-    if (job) reader.readAsArrayBuffer(job);
 };
