@@ -1,3 +1,6 @@
+
+const aiWorker = new Worker('ai.js');
+
 const carousel = document.getElementById('carousel');
 
 let scrollPos = 0,
@@ -80,14 +83,14 @@ const addImageCard = file => {
     // }, 700);
 };
 
-fetch('assets/japanese-temple1-small.jpeg').then(async file => {
-    const img = await file.blob()
-    addImageCard(img);
-    addImageCard(img);
-    addImageCard(img);
+// fetch('assets/japanese-temple1-small.jpeg').then(async file => {
+//     const img = await file.blob()
+//     addImageCard(img);
+//     addImageCard(img);
+//     addImageCard(img);
 
-    onScroll({});
-});
+//     onScroll({});
+// });
 
 const setLabelType = (label, type) => {
     label.dataset.type = type;
@@ -96,44 +99,59 @@ const setLabelType = (label, type) => {
     label.style.color = 'white';
 };
 
-const testImage = (card, file) => {
-    run(file).then(result => {
-        const {output, time} = result;
-        const type = output[0] < output[1] ? 'ai' : 'real';
-        console.log(time, type);
-        setLabelType(card.children[1], type);
+// const testImage = (card, file) => {
+//     run(file).then(result => {
+//         const {output, time} = result;
+//         const type = output[0] < output[1] ? 'ai' : 'real';
+//         console.log(time, type);
+//         setLabelType(card.children[1], type);
 
-        if (jobs.length) {
-            const j = jobs.shift();
-            testImage(j.el, j.file);
-        }
-    });
-};
+//         if (jobs.length) {
+//             const j = jobs.shift();
+//             testImage(j.el, j.file);
+//         }
+//     });
+// };
 
-const jobs = [];
-const startJobs = () => {
-    if (jobs.length) {
-        const j = jobs.shift();
-        testImage(j.el, j.file);
-    }
+// const jobs = [];
+// const startJobs = () => {
+//     if (jobs.length) {
+//         const j = jobs.shift();
+//         testImage(j.el, j.file);
+//     }
 
-    // for (const job of jobs) {
-    //     testImage(job.el, job.file);
-    // }
-};
+//     // for (const job of jobs) {
+//     //     testImage(job.el, job.file);
+//     // }
+// };
+
+let id = 0;
+const elements = [];
 
 const imgInput = document.getElementById('img-input');
 imgInput.oninput = async e => {
+    const message = [];
     for (const file of e.target.files) {
-        jobs.push({
-            el: addImageCard(file),
+        message.push({
+            id: id,
             file: file,
         });
+
+        elements[id] = addImageCard(file);
+
+        id ++;
     }
-    console.log('file', ready, jobs);
-    if (ready) startJobs();
+    
+    aiWorker.postMessage(message);
+    
+    // console.log('file', ready, jobs);
+    // if (ready) startJobs();
 };
 
+aiWorker.onmessage = e => {
+    console.log(e);
+    setLabelType(elements[e.data.id].children[1], e.data.type);
+};
 
 let scrollDir = 0;
 const leftScroll = document.getElementById('left-scroll');
@@ -184,4 +202,4 @@ loop();
 
 
 
-init().then(startJobs);
+// init().then(startJobs);

@@ -1,6 +1,10 @@
+importScripts(
+    'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.webgpu.min.js',
+    'https://cdn.jsdelivr.net/npm/jimp@0.22.12/browser/lib/jimp.min.js',
+);
+
 let ready = false;
 let session;
-
 
 const toTensor = img => {
     let index = 0;
@@ -50,10 +54,44 @@ const run = async file => {
     });
 };
 
+
+const testImage = (id, file) => {
+    run(file).then(result => {
+        const {output, time} = result;
+        const type = output[0] < output[1] ? 'ai' : 'real';
+        
+        // Test has ran, send back type and which element to change
+        self.postMessage({
+            id: id,
+            type: type,
+        });
+
+        if (jobs.length) {
+            const j = jobs.shift();
+            testImage(j.id, j.file);
+        }
+    });
+};
+
+const jobs = [];
+const startJobs = () => {
+    if (jobs.length) {
+        const j = jobs.shift();
+        testImage(j.id, j.file);
+    }
+};
+
+
 const init = async () => {
     session = await ort.InferenceSession.create('model.onnx', {
         executionProviders: ['webgpu']
     });
-    console.log(session)
     ready = true;
 };
+
+onmessage = e => {
+    jobs.push(...e.data);
+    if (ready) startJobs();
+}
+
+init().then(startJobs);
