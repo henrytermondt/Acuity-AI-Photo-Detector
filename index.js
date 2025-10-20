@@ -5,21 +5,50 @@ let scrollPos = 0,
 const gap = 90,
     imgWidth = 200,
     margin = 0;
+let childImages = [];
 const setImagePos = () => {
-    for (let i = 0; i < carousel.childElementCount; i++) {
-        const img = carousel.children[i];
-        img.style.transform = `translateX(${imgPos + i * (imgWidth + gap) + margin}px)`;
+    const center = window.innerWidth / 2 - imgWidth / 2;
+    for (let i = 0; i < childImages.length; i++) {
+        const img = childImages[i];
+        // console.log(img);
+        img.style.transform = `translateX(${
+            center +
+            imgPos + i * (imgWidth + gap) + margin
+        }px)`;
     }
 };
 
 setImagePos();
 
-carousel.onwheel = e => {
-    if (e.deltaX !== 0)
-        e.preventDefault();
+const checkScroll = () => {
+    const center = window.innerWidth / 2 - imgWidth / 2,
+        width = numImages * (imgWidth + gap);
 
-    scrollPos -= e.deltaX;
+    const farLeft = -center + gap;
+    if (scrollPos > farLeft) scrollPos = farLeft;
+
+    const farRight = -center + window.innerWidth - width;
+    if (scrollPos < farRight) scrollPos = farRight;
+
+    if (width < window.innerWidth) {
+        console.log('center');
+        scrollPos = -(
+            (numImages - 1) * imgWidth + // Accounts for offset in setImagePos
+            (numImages - 1) * gap
+        ) / 2;
+    }
 };
+const onScroll = e => {
+    if (e.deltaX !== 0)
+        e.preventDefault?.();
+
+    scrollPos -= e.deltaX || 0;
+
+    checkScroll();
+};
+carousel.onwheel = onScroll;
+
+window.onresize = checkScroll;
 
 const templateCardHTML = `
 <img>
@@ -29,6 +58,7 @@ const templateCardHTML = `
     <div class='loading-dot' style='animation-delay: -0.6667s;'></div>
 </div>`;
 
+let numImages = 0;
 const addImageCard = file => {
     const div = document.createElement('div');
     div.className = 'image';
@@ -36,13 +66,28 @@ const addImageCard = file => {
     div.innerHTML = templateCardHTML;
     div.children[0].src = URL.createObjectURL(file);
 
+    childImages.push(div);
     carousel.appendChild(div);
+
+    if (numImages++ !== 0)
+        scrollPos -= imgWidth / 2 + gap / 2;
+
+    console.log('Added');
 
     return div;
     // window.setTimeout(() => {
     //     setLabelType(div.children[1], 0);
     // }, 700);
 };
+
+fetch('assets/japanese-temple1-small.jpeg').then(async file => {
+    const img = await file.blob()
+    addImageCard(img);
+    addImageCard(img);
+    addImageCard(img);
+
+    onScroll({});
+});
 
 const setLabelType = (label, type) => {
     label.dataset.type = type;
@@ -78,16 +123,34 @@ const startJobs = () => {
 };
 
 const imgInput = document.getElementById('img-input');
-imgInput.onchange = async e => {
+imgInput.oninput = async e => {
     for (const file of e.target.files) {
         jobs.push({
             el: addImageCard(file),
             file: file,
         });
     }
+    console.log('file', ready, jobs);
     if (ready) startJobs();
 };
 
+
+let scrollDir = 0;
+const leftScroll = document.getElementById('left-scroll');
+leftScroll.onmouseover = () => {
+    scrollDir = 3;
+};
+leftScroll.onmouseout = () => {
+    scrollDir = 0;
+};
+
+const rightScroll = document.getElementById('right-scroll');
+rightScroll.onmouseover = () => {
+    scrollDir = -3;
+};
+rightScroll.onmouseout = () => {
+    scrollDir = 0;
+};
 
 // imgInput.addEventListener('change', e => {
 //     if (!ready) {
@@ -99,7 +162,13 @@ imgInput.onchange = async e => {
 
 
 const loop = () => {
+    if (scrollDir !== 0) {
+        scrollPos += scrollDir;
+        checkScroll();
+    }
+
     imgPos += (scrollPos - imgPos) / 4;
+    
     setImagePos();
 
     window.requestAnimationFrame(loop);
