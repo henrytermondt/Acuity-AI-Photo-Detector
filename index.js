@@ -13,7 +13,6 @@ const setImagePos = () => {
     const center = window.innerWidth / 2 - imgWidth / 2;
     for (let i = 0; i < childImages.length; i++) {
         const img = childImages[i];
-        // console.log(img);
         img.style.transform = `translateX(${
             center +
             imgPos + i * (imgWidth + gap) + margin
@@ -23,22 +22,65 @@ const setImagePos = () => {
 
 setImagePos();
 
+
+let scrollDir = 0;
+const leftScroll = document.getElementById('left-scroll');
+leftScroll.onmouseover = () => {
+    scrollDir = 3;
+};
+leftScroll.onmouseout = () => {
+    scrollDir = 0;
+};
+
+const rightScroll = document.getElementById('right-scroll');
+rightScroll.onmouseover = () => {
+    scrollDir = -3;
+};
+rightScroll.onmouseout = () => {
+    scrollDir = 0;
+};
+
+const setScrollVisibility = visible => {
+    leftScroll.style.display = rightScroll.style.display = visible ? 'flex' : 'none';
+};
+setScrollVisibility(false);
+
+let hiddenScroll = null;
 const checkScroll = () => {
     const center = window.innerWidth / 2 - imgWidth / 2,
         width = numImages * (imgWidth + gap);
 
+    const pastHidden = hiddenScroll;
+    hiddenScroll = null;
+
     const farLeft = -center + gap;
-    if (scrollPos > farLeft) scrollPos = farLeft;
+    if (scrollPos > farLeft) scrollPos = farLeft, hiddenScroll = 'left';
+    if (scrollPos > farLeft - 5) hiddenScroll = 'left';
 
     const farRight = -center + window.innerWidth - width;
-    if (scrollPos < farRight) scrollPos = farRight;
+    if (scrollPos < farRight) scrollPos = farRight, hiddenScroll = 'right';
+    if (scrollPos < farRight + 5) hiddenScroll = 'right';
 
-    if (width < window.innerWidth) {
-        console.log('center');
+    const fits = width < window.innerWidth;
+    if (fits) {
         scrollPos = -(
             (numImages - 1) * imgWidth + // Accounts for offset in setImagePos
             (numImages - 1) * gap
         ) / 2;
+    }
+    setScrollVisibility(!fits);
+
+    if (pastHidden !== hiddenScroll) {
+        if (hiddenScroll === 'left') {
+            leftScroll.style.opacity = '0';
+            rightScroll.style.opacity = '1';
+        } else if (hiddenScroll === 'right') {
+            leftScroll.style.opacity = '1';
+            rightScroll.style.opacity = '0';
+        } else {
+            leftScroll.style.opacity = '1';
+            rightScroll.style.opacity = '1';
+        }
     }
 };
 const onScroll = e => {
@@ -63,6 +105,8 @@ const templateCardHTML = `
 
 let numImages = 0;
 const addImageCard = file => {
+    carousel.style.display = 'block';
+
     const div = document.createElement('div');
     div.className = 'image';
 
@@ -75,22 +119,10 @@ const addImageCard = file => {
     if (numImages++ !== 0)
         scrollPos -= imgWidth / 2 + gap / 2;
 
-    console.log('Added');
+    checkScroll();
 
     return div;
-    // window.setTimeout(() => {
-    //     setLabelType(div.children[1], 0);
-    // }, 700);
 };
-
-// fetch('assets/japanese-temple1-small.jpeg').then(async file => {
-//     const img = await file.blob()
-//     addImageCard(img);
-//     addImageCard(img);
-//     addImageCard(img);
-
-//     onScroll({});
-// });
 
 const setLabelType = (label, type) => {
     label.dataset.type = type;
@@ -99,32 +131,6 @@ const setLabelType = (label, type) => {
     label.style.color = 'white';
 };
 
-// const testImage = (card, file) => {
-//     run(file).then(result => {
-//         const {output, time} = result;
-//         const type = output[0] < output[1] ? 'ai' : 'real';
-//         console.log(time, type);
-//         setLabelType(card.children[1], type);
-
-//         if (jobs.length) {
-//             const j = jobs.shift();
-//             testImage(j.el, j.file);
-//         }
-//     });
-// };
-
-// const jobs = [];
-// const startJobs = () => {
-//     if (jobs.length) {
-//         const j = jobs.shift();
-//         testImage(j.el, j.file);
-//     }
-
-//     // for (const job of jobs) {
-//     //     testImage(job.el, job.file);
-//     // }
-// };
-
 let id = 0;
 const elements = [];
 
@@ -132,42 +138,24 @@ const imgInput = document.getElementById('img-input');
 imgInput.oninput = async e => {
     const message = [];
     for (const file of e.target.files) {
-        message.push({
+        message.push({ // Assigne ID to image
             id: id,
             file: file,
         });
 
+        // Associate image card element to ID
         elements[id] = addImageCard(file);
 
         id ++;
     }
     
+    // Send image off to worker to be classified
     aiWorker.postMessage(message);
-    
-    // console.log('file', ready, jobs);
-    // if (ready) startJobs();
 };
 
+// Once type is received from worker
 aiWorker.onmessage = e => {
-    console.log(e);
     setLabelType(elements[e.data.id].children[1], e.data.type);
-};
-
-let scrollDir = 0;
-const leftScroll = document.getElementById('left-scroll');
-leftScroll.onmouseover = () => {
-    scrollDir = 3;
-};
-leftScroll.onmouseout = () => {
-    scrollDir = 0;
-};
-
-const rightScroll = document.getElementById('right-scroll');
-rightScroll.onmouseover = () => {
-    scrollDir = -3;
-};
-rightScroll.onmouseout = () => {
-    scrollDir = 0;
 };
 
 // imgInput.addEventListener('change', e => {
@@ -203,3 +191,15 @@ loop();
 
 
 // init().then(startJobs);
+
+
+/*
+
+                <!-- <svg id='logo' xmlns="http://www.w3.org/2000/svg" viewBox="0 -19 18 19">
+                    <path d="M 0 0 L 7 -19 L 18 -19 L 16.8947368 -16 L 8.8947368 -16 L 3 0 L 0 0" fill="white"/>
+                    <path d="M 0 0 L 7 -19 L 8.8947368 -16 L 3 0 L 0 0" fill="white"/>
+                    <path d="M 7 -19 L 18 -19 L 16.8947368 -16 L 8.8947368 -16" fill="white"/>
+
+                    <circle cx='12.5' cy='-7' r='1.7' fill='white'/>
+                </svg> -->
+*/
