@@ -1,4 +1,3 @@
-
 const aiWorker = new Worker('ai.js');
 
 const carousel = document.getElementById('carousel');
@@ -158,15 +157,6 @@ aiWorker.onmessage = e => {
     setLabelType(elements[e.data.id].children[1], e.data.type);
 };
 
-// imgInput.addEventListener('change', e => {
-//     if (!ready) {
-//         job = e.target.files[0];
-//     } else {
-//         reader.readAsArrayBuffer(e.target.files[0]);
-//     }
-// });
-
-
 const loop = () => {
     if (scrollDir !== 0) {
         scrollPos += scrollDir;
@@ -180,26 +170,3 @@ const loop = () => {
     window.requestAnimationFrame(loop);
 };
 loop();
-
-
-// window.setTimeout(() => {
-//     const width = (container.children.length - 1) * 200 + (container.children.length - 1) * 40 + 150;
-//     container.style.width = width + 'px';
-//     console.log(width);
-// }, 400);
-
-
-
-// init().then(startJobs);
-
-
-/*
-
-                <!-- <svg id='logo' xmlns="http://www.w3.org/2000/svg" viewBox="0 -19 18 19">
-                    <path d="M 0 0 L 7 -19 L 18 -19 L 16.8947368 -16 L 8.8947368 -16 L 3 0 L 0 0" fill="white"/>
-                    <path d="M 0 0 L 7 -19 L 8.8947368 -16 L 3 0 L 0 0" fill="white"/>
-                    <path d="M 7 -19 L 18 -19 L 16.8947368 -16 L 8.8947368 -16" fill="white"/>
-
-                    <circle cx='12.5' cy='-7' r='1.7' fill='white'/>
-                </svg> -->
-*/
