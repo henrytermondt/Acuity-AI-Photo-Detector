@@ -1,3 +1,4 @@
+// Import the ONNX Runtime and Jimp
 importScripts(
     'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.webgpu.min.js',
     'https://cdn.jsdelivr.net/npm/jimp@0.22.12/browser/lib/jimp.min.js',
@@ -10,6 +11,7 @@ const toTensor = img => {
     let index = 0;
     const data = new Float32Array(3 * 224 * 224);
 
+    // Organize pixels correctly
     for (let i = 0; i < img.bitmap.data.length; i += 4) {
         data[index    ] = img.bitmap.data[i    ] / 255;
         data[index + 1] = img.bitmap.data[i + 1] / 255;
@@ -20,6 +22,8 @@ const toTensor = img => {
 
     return new ort.Tensor('float32', data, [1, 3, 224, 224]);
 };
+
+// Get how confident the AI is in its predictions
 const runInference = async bufferData => {
     const img = await Jimp.read(bufferData);
     img.resize(224, 224);
@@ -35,8 +39,7 @@ const runInference = async bufferData => {
     return [Math.exp(output[0]) / sum, Math.exp(output[1]) / sum];
 };
 
-
-
+// Read file and run prediction
 const run = async file => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -54,7 +57,7 @@ const run = async file => {
     });
 };
 
-
+// Test an image, get the prediction, and send the result out of the worker
 const testImage = (id, file) => {
     run(file).then(result => {
         const {output, time} = result;
@@ -81,7 +84,7 @@ const startJobs = () => {
     }
 };
 
-
+// Create AI
 const init = async () => {
     session = await ort.InferenceSession.create('model.onnx', {
         executionProviders: ['webgpu']
